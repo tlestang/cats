@@ -9,7 +9,7 @@ class CarbonIntensityPointEstimate:
     instance based on the first attribute. See
     https://peps.python.org/pep-0557
     """
-    value: float # the first attribute is used automatically for sorting methods
+    value: float  # the first attribute is used automatically for sorting methods
     datetime: datetime
 
 
@@ -26,7 +26,7 @@ class CarbonIntensityAverageEstimate:
 
 
 class WindowedForecast:
-
+    """Undocumented"""
     def __init__(
             self,
             data: list[CarbonIntensityPointEstimate],
