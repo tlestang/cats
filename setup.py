@@ -1,5 +1,8 @@
+import setuptools
 from setuptools import setup
-from Cython.Build import cythonize
+
+if (setuptools.__version__ != "65.5.0"):
+      raise Exception
 
 setup(
     name="climate-aware-task-scheduler",
@@ -17,5 +20,4 @@ setup(
 	]
     },
     packages=["cats"],
-    ext_modules=cythonize("cats/hello.pyx"),
 )
