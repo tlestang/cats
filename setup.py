@@ -1,4 +1,5 @@
 from setuptools import setup
+from Cython.Build import cythonize
 
 setup(
     name="climate-aware-task-scheduler",
@@ -16,4 +17,5 @@ setup(
 	]
     },
     packages=["cats"],
+    ext_modules=cythonize("cats/hello.pyx"),
 )
