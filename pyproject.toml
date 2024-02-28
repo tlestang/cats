@@ -1,3 +1,17 @@
 [build-system]
-requires = ["setuptools==65.5", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["flit"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "climate-aware-task-scheduler"
+version = "0.1.0"
+description = "Climate aware task scheduler"
+authors = []
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+dependencies = ["requests-cache>=1.0", "PyYAML>=6.0"]
+[project.scripts]
+cats = "cats:main"
+
+[tool.flit.module]
+name = "cats"
