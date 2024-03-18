@@ -41,6 +41,7 @@ def get_runtime_config(args) -> tuple[dict, APIInterface, str, int]:
     configmapping = config_from_file(configpath=args.config)
     CI_API_interface = CI_API_from_config_or_args(args, configmapping)
     location = get_location_from_config_or_args(args, configmapping)
+    hw_info = get_hardware_info(args, configmapping)
 
     msg = "Job duration must be a positive integer (number of minutes)"
     try:
@@ -112,3 +113,55 @@ def get_location_from_config_or_args(args, config) -> str:
         f"location not provided. Estimating location from IP address: {location}."
     )
     return location
+
+
+def get_hardware_info(jobinfo: str, profiles: dict):
+    """Parses a string of job info keys in the form
+
+    profile=GPU_partition,memory=8,ncpus=8,ngpus=4
+
+    and checks all required info keys are present and of the right type.
+
+    Returns
+    -------
+
+    info: dict
+        A dictionary mapping info key to their specified values
+    """
+
+    expected_info_keys = (
+        "memory",
+        "cpus",
+        "gpus",
+    )
+    info = dict([m.groups() for m in re.finditer(r"(\w+)=(\w+)", jobinfo)])
+
+    # Check if some information is missing
+    if missing_keys := set(expected_info_keys) - set(info.keys()):
+        sys.stderr.write(f"ERROR: Missing job info keys: {missing_keys}")
+        return {}
+
+    if "profile" not in info.keys():
+        profile_key, profile = next(iter(profiles.items()))
+        logging.warning(f"Using default profile {profile_key}")
+    else:
+        try:
+            profile = profiles[info.pop("profile")]
+        except KeyError:
+            logging.error(
+                f"ERROR: job info key 'profile' should be one of {profiles.keys()}. Typo?\n"
+            )
+        sys.exit(1)
+
+    # check that `cpus`, `gpus` and `memory` are numeric and convert to int
+    for key in [k for k in info]:
+        try:
+            info[key] = int(info[key])
+        except ValueError:
+            loggin.error(f"job info key {key} should be numeric\n")
+            sys.exit(1)
+
+    return [
+        (profile[device_type]["power"], info[f"n{device_type}s"])
+        for device_type in ["cpu", "gpu"]
+    ]

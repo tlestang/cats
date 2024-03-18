@@ -176,3 +176,10 @@ class greenAlgorithmsCalculator:
         return Estimates(
             *[self.formatText_footprint(e) for e in [now, best, now - best]]
         )
+
+
+l = [(2, 3), (4, 1), (5, 1)]
+
+
+def total_energy(runtime):
+    return runtime * sum([(x * y) / 1000 for x, y in l])
